@@ -5,7 +5,11 @@ import argparse
 import os
 import matplotlib.pyplot as plt
 from scipy import stats
-
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import classification_report, confusion_matrix
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_squared_error, r2_score
+from sklearn.preprocessing import PolynomialFeatures
 
 def get_error(simul, real, k=1, mse=False):
     if mse:
@@ -78,7 +82,34 @@ def plot_mse(file_dist1, info_rank, index, title, chisq=False):
 
             l2, caps, c2 = plt.errorbar(index, file_dist, lolims=lowerlims, \
                                         uplims=uplims, yerr=np.abs(np.subtract(file_dist, info_rank)),
-                                        elinewidth=0.5,markeredgewidth=1,capsize=2, marker="o", ecolor="b", markersize=2, fmt=clr[j - 1])
+                                        elinewidth=0.1,markeredgewidth=2,capsize=2, marker="o", ecolor="b", markersize=2, fmt=clr[j - 1])
+            # index = np.array(index)
+            # index = index[..., np.newaxis]
+            # poly_fit = PolynomialFeatures(degree=(len(index)**0.5))
+            # index_x = poly_fit.fit_transform(index)
+            #
+            # model = LinearRegression()
+            # model.fit(index_x, file_dist)
+            # y_poly_pred = model.predict(index_x)
+            # plt.plot(index, y_poly_pred)
+            x = np.array(index)
+
+            # transforming the data to include another axis
+            x = x[:, np.newaxis]
+            y = file_dist[:, np.newaxis]
+            file_dist = file_dist[:, np.newaxis]
+
+            polynomial_features = PolynomialFeatures(degree=10)
+            x_poly = polynomial_features.fit_transform(x)
+
+            model = LinearRegression()
+            model.fit(x_poly, y)
+            y_poly_pred = model.predict(x_poly)
+            plt.plot(index, y_poly_pred, linewidth=3)
+            # chisq = []
+            # for k in range(len(file_dist)):
+            #     chisq.append(stats.chisquare(file_dist[k], f_exp=info_rank[k])[0])
+            # plt.plot(index, chisq)
             # plt.plot(index, file_dist)
             for cap in caps:
                 cap.set_marker("o")

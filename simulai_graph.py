@@ -60,7 +60,7 @@ def get_parameters(path):
 
 def plot_mse(file_dist1, info_rank, index, title, chisq=False):
     j = 1
-    clr = ["or", "om", "ob", "ok"]
+    clr = ["or", "om", "ob", "ok", "oc", "oy", "oC1", "oC2", "oC3"]
     if not chisq:
         for file_dist in file_dist1:
             plt.figure(j)
@@ -75,7 +75,7 @@ def plot_mse(file_dist1, info_rank, index, title, chisq=False):
                 else:
                     lowerlims[i] = 1
                     uplims[i] = 0
-            l2, caps, c2 = plt.errorbar(index, file_dist, lolims=lowerlims, uplims=uplims, yerr=abs(file_dist - info_rank), marker="o", ecolor="g", fmt=clr[j - 1])
+            l2, caps, c2 = plt.errorbar(index, file_dist, lolims=lowerlims, uplims=uplims, yerr=np.abs(np.subtract(file_dist, info_rank)), marker="o", ecolor="g", fmt=clr[j - 1])
             # plt.plot(index, file_dist)
             for cap in caps:
                 cap.set_marker("o")
@@ -238,11 +238,19 @@ def main(json_path):
         gravity_median_show.append(statistics.median(gravity_median[:, i]))
         amp_median_show.append(statistics.median(amplitude_median[:, i]))
         at_median_show.append(statistics.median(atwood_median[:, i]))
-        gravity_amp_median_show.append(statistics.median(gravity_median[:, i]))
-        gravity_at_median_show.append(statistics.median(gravity_median[:, i]))
-        amp_at_median_show.append(statistics.median(gravity_median[:, i]))
+        gravity_amp_median_show.append(statistics.median(gravity_amp_median[:, i]))
+        gravity_at_median_show.append(statistics.median(gravity_at_median[:, i]))
+        amp_at_median_show.append(statistics.median(amp_at_median[:, i]))
         gravity_amp_at_median_show.append(statistics.median(gravity_amp_at_median[:, i]))
         infogan_dist_median_show.append(statistics.median(infogan_dist_median[:, i]))
+    gravity_median_show = min_max_normalize(gravity_median_show)
+    amp_median_show = min_max_normalize(amp_median_show)
+    at_median_show = min_max_normalize(at_median_show)
+    gravity_amp_median_show = min_max_normalize(gravity_amp_median_show)
+    gravity_at_median_show = min_max_normalize(gravity_at_median_show)
+    amp_at_median_show = min_max_normalize(amp_at_median_show)
+    gravity_amp_at_median_show = min_max_normalize(gravity_amp_at_median_show)
+    infogan_dist_median_show = min_max_normalize(infogan_dist_median_show)
 
     gravity_avg_show = min_max_normalize([x / num_test for x in gravity_avg])
     amp_avg_show = min_max_normalize([x / num_test for x in amp_avg])
@@ -254,21 +262,40 @@ def main(json_path):
     infogan_dist_avg_show = min_max_normalize([x / num_test for x in infogan_dist_avg])
 
     mse.append(gravity_avg_show)
+    title.append("Compare parameter: {0}".format("Gravity - Average"))
     mse.append(amp_avg_show)
+    title.append("Compare parameter: {0}".format("Amplitude - Average"))
     mse.append(at_avg_show)
+    title.append("Compare parameter: {0}".format("Atwood - Average"))
     mse.append(gra_amp_avg_show)
+    title.append("Compare parameter: {0}".format("Gravity, Amplitude - Average"))
     mse.append(gra_at_avg_show)
+    title.append("Compare parameter: {0}".format("Gravity, Atwood - Average"))
     mse.append(amp_at_avg_show)
-    # title.append("Compare for: {4} \n Gravity: {0}    Amplitude: {1}    Atwood: {2}    Time: {3}" \
-    #              .format(str(real_g), str(real_amp), str(real_at), str(real_time), "Gravity"))
-    title.append("Compare parameter: {0}".format("Gravity"))
-    title.append("Compare parameter: Gravity Amplitude Atwood")
+    title.append("Compare parameter: {0}".format("Amplitude, Atwood - Average"))
+    mse.append(gra_amp_at_avg_show)
+    title.append("Compare parameter: {0}".format("Gravity, Amplitude, Atwood - Average"))
 
     index = range(0, len(index))
-
-        # plot gravity
     plot_mse(mse, infogan_dist_avg_show, index, title, False)
 
+    mse = []
+    title = []
+    mse.append(gravity_median_show)
+    title.append("Compare parameter: {0}".format("Gravity - Median"))
+    mse.append(amp_median_show)
+    title.append("Compare parameter: {0}".format("Amplitude - Median"))
+    mse.append(at_median_show)
+    title.append("Compare parameter: {0}".format("Atwood - Median"))
+    mse.append(gravity_amp_median_show)
+    title.append("Compare parameter: {0}".format("Gravity, Amplitude - Median"))
+    mse.append(gravity_at_median_show)
+    title.append("Compare parameter: {0}".format("Gravity, Atwood - Median"))
+    mse.append(amp_at_median_show)
+    title.append("Compare parameter: {0}".format("Amplitude, Atwood - Median"))
+    mse.append(gravity_amp_at_median_show)
+    title.append("Compare parameter: {0}".format("Gravity, Amplitude, Atwood - Median"))
+    plot_mse(mse, infogan_dist_median_show, index, title, False)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Runs tests with varying input sizes.')

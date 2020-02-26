@@ -60,7 +60,7 @@ def get_parameters(path):
 
 def plot_mse(file_dist1, info_rank, index, title, chisq=False):
     j = 1
-    clr = ["or", "om", "ob", "ok", "oc", "oy", "oC1", "oC2", "oC3"]
+    clr = ["or", "ok", "or", "ok", "or", "ok", "or", "ok", "or"]
     if not chisq:
         for file_dist in file_dist1:
             plt.figure(j)
@@ -75,7 +75,10 @@ def plot_mse(file_dist1, info_rank, index, title, chisq=False):
                 else:
                     lowerlims[i] = 1
                     uplims[i] = 0
-            l2, caps, c2 = plt.errorbar(index, file_dist, lolims=lowerlims, uplims=uplims, yerr=np.abs(np.subtract(file_dist, info_rank)), marker="o", ecolor="g", fmt=clr[j - 1])
+
+            l2, caps, c2 = plt.errorbar(index, file_dist, lolims=lowerlims, \
+                                        uplims=uplims, yerr=np.abs(np.subtract(file_dist, info_rank)),
+                                        elinewidth=0.5,markeredgewidth=1,capsize=2, marker="o", ecolor="b", markersize=2, fmt=clr[j - 1])
             # plt.plot(index, file_dist)
             for cap in caps:
                 cap.set_marker("o")
@@ -255,7 +258,7 @@ def main(json_path):
     gravity_avg_show = min_max_normalize([x / num_test for x in gravity_avg])
     amp_avg_show = min_max_normalize([x / num_test for x in amp_avg])
     at_avg_show = min_max_normalize([x / num_test for x in at_avg])
-    gra_amp_avg_show = min_max_normalize([x / num_test for x in gra_at_avg])
+    gra_amp_avg_show = min_max_normalize([x / num_test for x in gra_amp_avg])
     gra_at_avg_show = min_max_normalize([x / num_test for x in gra_at_avg])
     amp_at_avg_show = min_max_normalize([x / num_test for x in amp_at_avg])
     gra_amp_at_avg_show = min_max_normalize([x / num_test for x in gra_amp_at_avg])
